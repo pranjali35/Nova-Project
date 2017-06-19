@@ -159,10 +159,11 @@ public class ClsSpeechlet implements Speechlet {
 			dateObject = new DateValues<String>("Today");
 			return dateObject;
 		} else {
-			DateFormat dateFormat = new SimpleDateFormat("MM-dd-yyyy");
+			DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 			Date date;
 			try {
 				date = dateFormat.parse(dateSlot.getValue());
+				System.out.println("*****Date Received is:"+date);
 			} catch (ParseException e) {
 				date = new Date();
 			}
@@ -183,6 +184,7 @@ public class ClsSpeechlet implements Speechlet {
 
 							dateObject =
 									new DateValues<String>(ClsDateUtil.getFormattedDate(date));
+							System.out.println("Date Object is:::::"+dateObject);
 							return dateObject;
 		}
 	}
@@ -283,28 +285,34 @@ System.out.println("******Date object:"+dateObject);
 		{
 System.out.println("in makeClsReportRequest-OneshotSidesSettledIntent");
 			String Rcvddate =getDateFromIntent(intent).toString();
-			System.out.println("in makeClsReportRequest-OneshotSidesSettledIntent-Rcvddate"+Rcvddate);		
+			System.out.println("in makeClsReportRequest-OneshotSidesSettledIntent-Rcvddate"+Rcvddate);	
+			String Prevdate = yesterday();
+			System.out.println("Rcvddate and yestreday"+Rcvddate +Prevdate);
 			String CurrSidesSettled = ReadReport( Rcvddate, intent);
 			String PrevSidesSettled = ReadReport( yesterday(), intent);
+			System.out.println("CurrSidesSettled & PrevSidesSettled"+CurrSidesSettled +PrevSidesSettled);
 			if(Integer.parseInt(CurrSidesSettled) > Integer.parseInt(PrevSidesSettled))
 			{
+				System.out.println("WHY HERE?");
 				speechOutput  =  
 						"The sides settled by CLS are "
 								+ CurrSidesSettled + "" +"and the number of sides settled have increased from previous day";
 			}
-			else
+			else if(Integer.parseInt(CurrSidesSettled) < Integer.parseInt(PrevSidesSettled))
 			{
 				speechOutput  =  
 						"The sides settled by CLS are "
 								+ CurrSidesSettled + "" +"and the number of sides settled have decreased from previous day";
 			}
-		}
-		else
+		
+		else 
 		{
 			speechOutput = 
-					"Did you mean the gross value of settlement today or sides settled by CLS today?";
+					"The sides settled by CLS are "
+							+ CurrSidesSettled + "" +"and the number of sides settled are same as that of the previous day";
 
 		} 
+		}
 		// Create the Simple card content.
 		SimpleCard card = new SimpleCard();
 		card.setTitle("CLS Daily Stats");
